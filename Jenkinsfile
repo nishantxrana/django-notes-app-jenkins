@@ -1,29 +1,22 @@
-@Library('Shared')_
+@Library('Shared-github') _
 pipeline{
-    agent { label 'dev-server'}
+    agent{
+        label 'worker'
+    }
+    environment{
+        Repo_name = 'jenkins-test'
+    }
     
     stages{
-        stage("Code clone"){
-            steps{
-                sh "whoami"
-            clone("https://github.com/LondheShubham153/django-notes-app.git","main")
+        // stage('checkout'){
+        //     steps{
+        //         check('https://github.com/nishantxrana/django-notes-app-jenkins.git','main')
+        //     }
+        // }
+        stage("Build & Push Docker image") {
+            steps {
+                docker_build_and_push("DockerHub","${env.Repo_name}")
             }
         }
-        stage("Code Build"){
-            steps{
-            dockerbuild("notes-app","latest")
-            }
-        }
-        stage("Push to DockerHub"){
-            steps{
-                dockerpush("dockerHubCreds","notes-app","latest")
-            }
-        }
-        stage("Deploy"){
-            steps{
-                deploy()
-            }
-        }
-        
     }
 }
